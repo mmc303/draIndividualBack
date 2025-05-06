@@ -14,6 +14,8 @@ class Usuario(UsuarioBase):
 
 class PersonajeBase(BaseModel):
     nombrePersonaje: str
+    elemento: str
+    urlImagen: str
 
 class Personaje(PersonajeBase):
     idPersonaje: int
@@ -28,23 +30,44 @@ class UsuarioPersonaje(BaseModel):
     class Config:
         orm_mode = True
 
+
+#Equipo
+class PersonajeEquipo(BaseModel):
+    personaje: PersonajeBase
+    arma: Optional[str]
+    artefacto: Optional[str]
+
+class DetallesEquipo(BaseModel):
+    personajes: List[PersonajeEquipo]
+    justificacion: str
+    rotacion: str
+
 class EquipoBase(BaseModel):
     canonicalKey: str
-    detalles: Dict
+    detalles: DetallesEquipo
 
 class Equipo(EquipoBase):
     idEquipo: int
     class Config:
         orm_mode = True
 
-class AbismoBase(BaseModel):
-    patch: str
-    listaPersonajes: Dict
-    listaEquipos: Dict
-    class Config:
-        orm_mode = True
 
-class Abismo(AbismoBase):
+#Abismo
+class PersonajeAbismo(BaseModel):
+    personaje: PersonajeBase
+    usoPersonaje: float
+
+class EquipoAbismo(BaseModel):
+    personajes: List[PersonajeBase]
+    usoEquipo: float
+    ratio: str
+
+class AbismoBase(BaseModel):
+    version: str
+    listaPersonajes: List[PersonajeAbismo]
+    listaEquipos: List[EquipoAbismo]
+
+class Abismo(BaseModel):
     idAbismo: int
     class Config:
         orm_mode = True

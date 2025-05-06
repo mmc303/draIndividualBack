@@ -35,7 +35,8 @@ class Equipo(Base):
 
 class Abismo(Base):
     __tablename__ = "abismo"
-    idAbismo = Column(Integer, primary_key=True, index=True) #Version 1.0A -> 101 / Version 1.0B -> 102 / Version 5.4A -> 504
+    idAbismo = Column(Integer, primary_key=True, index=True) 
+    version = Column(String, nullable=False) #Version 1.0A / Version 5.4B
     listaPersonajes = Column(JSONB, nullable=False)
     listaEquipos = Column(JSONB, nullable=False)
     

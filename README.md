@@ -5,13 +5,15 @@ Incluye autenticación con JWT y manejo de sesiones con cookies.
 
 # 🧱 Estructura de la Base de Datos
 ## Tablas principales:
-**Usuario**: Usuarios registrados.
+**[Usuario](#usuario)**: Usuarios registrados.
 
-**Personaje**: Personajes disponibles.
+**[Personaje](#personaje)**: Personajes disponibles.
 
-**UsuarioPersonaje**: Relación N:M entre usuarios y personajes, con información adicional como arma y artefacto.
+**[UsuarioPersonaje](#usuariopersonaje)**: Relación N:M entre usuarios y personajes, con información adicional como arma y artefacto.
 
-**Equipo**: Información de equipos, con una clave única (canonicalKey) y detalles en formato JSON.
+**[Equipo](#equipo)**: Información de equipos, con una clave única (canonicalKey) y detalles en formato JSON.
+
+**[Abismo](#abismo)**: Información de mejores personajes y equipos por versión de abismo.
 
 ## Relaciones
 Usuario ⟷ UsuarioPersonaje ⟷ Personaje
@@ -70,7 +72,9 @@ Crea un nuevo personaje.
 Body (JSON):
 ```json
 {
-  "nombrePersonaje": "Aether"
+  "nombrePersonaje": "Aether",
+  "elemento": "Anemo",
+  "urlImagen": "https://example.com/images/aether.png"
 }
 ```
 
@@ -100,8 +104,6 @@ Actualiza el arma o artefacto de una relación existente.
 Body (JSON):
 ```json
 {
-  "idUsuario": 1,
-  "idPersonaje": 2,
   "arma": "Espada mágica",
   "artefacto": "Orbe de fuego"
 }
@@ -123,10 +125,48 @@ Crea un nuevo equipo con su configuración detallada.
 Body (JSON):
 ```json
 {
-  "canonicalKey": "equipo_001",
+  "canonicalKey": "BennettXianglingXingqiuSucrose",
   "detalles": {
-    "personajes": [1, 2, 3],
-    "sinergia": "Reacción elemental"
+    "personajes": [
+      {
+        "personaje": {
+          "nombrePersonaje": "Bennett",
+          "elemento": "Pyro",
+          "urlImagen": "https://example.com/images/bennett.png"
+        },
+        "arma": "Espada de Favonius",
+        "artefacto": "4x Nobleza"
+      },
+      {
+        "personaje": {
+          "nombrePersonaje": "Xiangling",
+          "elemento": "Pyro",
+          "urlImagen": "https://example.com/images/xiangling.png"
+        },
+        "arma": "La Captura",
+        "artefacto": "4x Emblema del Destino"
+      },
+      {
+        "personaje": {
+          "nombrePersonaje": "Xingqiu",
+          "elemento": "Hydro",
+          "urlImagen": "https://example.com/images/xingqiu.png"
+        },
+        "arma": "Espada de Sacrificio",
+        "artefacto": "4x Emblema del Destino"
+      },
+      {
+        "personaje": {
+          "nombrePersonaje": "Sucrose",
+          "elemento": "Anemo",
+          "urlImagen": "https://example.com/images/sucrose.png"
+        },
+        "arma": "Cuentos de Cazadores de Dragones",
+        "artefacto": "4x Sombra Verde Esmeralda"
+      }
+    ],
+    "justificacion": "Equipo Nacional clásico, gran daño y sinergia elemental.",
+    "rotacion": "Bennett Q E -> Sucrose E -> Xiangling Q E -> Xingqiu Q E -> Bennett E..."
   }
 }
 ```
@@ -142,16 +182,53 @@ Crea una nueva entrada de abismo.
 Body (JSON):
 ```json
 {
-  "patch": "461",
-  "listaPersonajes": {
-    "1": "Xiao",
-    "2": "Zhongli"
-  },
-  "listaEquipos": {
-    "equipo_001": {
-      "descripcion": "Equipo de daño en área"
+  "version": "4.6A",
+  "listaPersonajes": [
+    {
+      "personaje": {
+        "nombrePersonaje": "Furina",
+        "elemento": "Hydro",
+        "urlImagen": "https://example.com/images/furina.png"
+      },
+      "usoPersonaje": 92.5
+    },
+    {
+      "personaje": {
+        "nombrePersonaje": "Neuvillette",
+        "elemento": "Hydro",
+        "urlImagen": "https://example.com/images/neuvillette.png"
+      },
+      "usoPersonaje": 89.7
     }
-  }
+  ],
+  "listaEquipos": [
+    {
+      "personajes": [
+        {
+          "nombrePersonaje": "Neuvillette",
+          "elemento": "Hydro",
+          "urlImagen": "https://example.com/images/neuvillette.png"
+        },
+        {
+          "nombrePersonaje": "Furina",
+          "elemento": "Hydro",
+          "urlImagen": "https://example.com/images/furina.png"
+        },
+        {
+          "nombrePersonaje": "Kaedehara Kazuha",
+          "elemento": "Anemo",
+          "urlImagen": "https://example.com/images/kazuha.png"
+        },
+        {
+          "nombrePersonaje": "Baizhu",
+          "elemento": "Dendro",
+          "urlImagen": "https://example.com/images/baizhu.png"
+        }
+      ],
+      "usoEquipo": 34.0,
+      "ratio": "95:5"
+    }
+  ]
 }
 ```
 
@@ -168,8 +245,8 @@ docker-compose up --build
 Accede a la API en: http://localhost:8000/docs
 
 3. Crear cuenta
-```json
 POST /usuarios/
+```json
 {
   "correo": "ejemplo@correo.com",
   "contrasena": "1234"
@@ -177,8 +254,8 @@ POST /usuarios/
 ```
 
 4. Iniciar sesión
-```json
 POST /login
+```json
 {
   "correo": "ejemplo@correo.com",
   "contrasena": "1234"
