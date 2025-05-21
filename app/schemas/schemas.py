@@ -10,7 +10,7 @@ class UsuarioCreate(UsuarioBase):
 class Usuario(UsuarioBase):
     idUsuario: int
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 class PersonajeBase(BaseModel):
     nombrePersonaje: str
@@ -20,7 +20,7 @@ class PersonajeBase(BaseModel):
 class Personaje(PersonajeBase):
     idPersonaje: int
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 class UsuarioPersonaje(BaseModel):
     idUsuario: int
@@ -28,7 +28,7 @@ class UsuarioPersonaje(BaseModel):
     arma: Optional[str]
     artefacto: Optional[str]
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 #Equipo
@@ -49,7 +49,7 @@ class EquipoBase(BaseModel):
 class Equipo(EquipoBase):
     idEquipo: int
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
 
 
 #Abismo
@@ -70,4 +70,4 @@ class AbismoBase(BaseModel):
 class Abismo(BaseModel):
     idAbismo: int
     class Config:
-        orm_mode = True
+        model_config = {"from_attributes": True}
