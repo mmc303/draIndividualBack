@@ -12,6 +12,7 @@ class Usuario(UsuarioBase):
     class Config:
         model_config = {"from_attributes": True}
 
+#Personaje
 class PersonajeBase(BaseModel):
     nombrePersonaje: str
     elemento: str

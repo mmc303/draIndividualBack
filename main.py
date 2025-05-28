@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import usuario, personaje, equipo, usuariopersonaje, abismo, auth
+from app.routers import usuario, personaje, equipo, usuariopersonaje, abismo, auth, genshin_externo
 from app.database import engine, Base
 
 Base.metadata.create_all(bind=engine)
@@ -21,3 +21,4 @@ app.include_router(equipo.router)
 app.include_router(usuariopersonaje.router)
 app.include_router(abismo.router)
 app.include_router(auth.router)
+app.include_router(genshin_externo.router)
