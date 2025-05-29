@@ -16,6 +16,7 @@ class Usuario(UsuarioBase):
 class PersonajeBase(BaseModel):
     nombrePersonaje: str
     elemento: str
+    rareza: int
     urlImagen: str
 
 class Personaje(PersonajeBase):
