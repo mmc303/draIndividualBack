@@ -1,6 +1,23 @@
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 
+#Objeto base
+class ObjetoInventario(BaseModel):
+    idObjetoApi: int
+    nombreObjeto: str
+    rarezaObjeto: int
+    imagenObjeto: str
+    class Config:
+        model_config = {"from_attributes": True}
+
+# Relación usuario-inventario
+class Inventario(BaseModel):
+    idObjetoApi: int
+    cantidadObjeto: int
+    class Config:
+        model_config = {"from_attributes": True}
+
+#Usuario
 class UsuarioBase(BaseModel):
     correo: str
 
@@ -9,15 +26,23 @@ class UsuarioCreate(UsuarioBase):
 
 class Usuario(UsuarioBase):
     idUsuario: int
+    inventario: List[Inventario]
     class Config:
         model_config = {"from_attributes": True}
 
 #Personaje
+class Material(BaseModel):
+    idMaterial: int
+    nombreMaterial: str
+    cantidadMaterial: int
+    imagenMaterial: str
+
 class PersonajeBase(BaseModel):
     nombrePersonaje: str
     elemento: str
     rareza: int
     urlImagen: str
+    ascensiones: Dict[str, List[Material]]
 
 class Personaje(PersonajeBase):
     idPersonaje: int
@@ -31,7 +56,6 @@ class UsuarioPersonaje(BaseModel):
     artefacto: Optional[str]
     class Config:
         model_config = {"from_attributes": True}
-
 
 #Equipo
 class PersonajeEquipo(BaseModel):

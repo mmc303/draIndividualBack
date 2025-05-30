@@ -6,3 +6,8 @@ alembic
 python-dotenv
 python-jose[cryptography]
 passlib[bcrypt]
+requests
+selenium
+beautifulsoup4
+chromedriver-autoinstaller
+undetected-chromedriver

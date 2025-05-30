@@ -1,5 +1,14 @@
 import requests
 from fastapi import APIRouter, HTTPException
+from app.schemas.schemas import ObjetoInventario
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, ElementClickInterceptedException, NoSuchElementException
+import time
+import undetected_chromedriver as uc
 
 router = APIRouter(prefix="/genshin", tags=["genshin"])
 
@@ -12,3 +21,4 @@ def obtener_personaje_externo(nombre: str):
         return response.json()
     except requests.RequestException as e:
         raise HTTPException(status_code=502, detail=f"Error al consultar la API externa: {str(e)}")
+
