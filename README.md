@@ -15,8 +15,14 @@ Incluye autenticación con JWT y manejo de sesiones con cookies.
 
 **[Abismo](#abismo)**: Información de mejores personajes y equipos por versión de abismo.
 
+**[ObjetoInventario](#objetoinventario)**: Objetos disponibles en el inventario.
+
+**[Inventario](#inventario)**: Inventario de cada usuario, con la cantidad de cada objeto.
+
 ## Relaciones
 Usuario ⟷ UsuarioPersonaje ⟷ Personaje
+
+Usuario ⟷ Inventario
 
 # 🔐 Autenticación
 **/login**: Permite a los usuarios iniciar sesión enviando su correo y contraseña.
@@ -229,6 +235,54 @@ Body (JSON):
       "ratio": "95:5"
     }
   ]
+}
+```
+
+## ObjetoInventario
+GET `/inventario/objetos`
+
+Devuelve la lista de todos los objetos disponibles en la base de datos.
+
+POST `/inventario/objetos`
+
+Crea un nuevo objeto en la base de datos.
+
+Body (JSON):
+```json
+{
+  "idObjetoApi": 1,
+  "nombreObjeto": "Fragmento de amatista",
+  "rarezaObjeto": 4,
+  "imagenObjeto": "https://example.com/images/amatista.png"
+}
+```
+
+## Inventario
+GET `/inventario/{idUsuario}`
+
+Devuelve el inventario de un usuario específico.
+
+POST `/inventario/{idUsuario}`
+
+Agrega un objeto al inventario de un usuario (si existe suma la cantidad).
+
+Body (JSON):
+```json
+{
+  "idObjetoApi": 1,
+  "cantidadObjeto": 5
+}
+```
+
+PUT `/inventario/{idUsuario}`
+
+Modifica la cantidad de un objeto en el inventario de un usuario.
+
+Body (JSON):
+```json
+{
+  "idObjetoApi": 1,
+  "cantidadObjeto": 10
 }
 ```
 

@@ -11,9 +11,12 @@ class ObjetoInventario(BaseModel):
         model_config = {"from_attributes": True}
 
 # Relación usuario-inventario
-class Inventario(BaseModel):
+class InventarioBase(BaseModel):
     idObjetoApi: int
     cantidadObjeto: int
+
+class Inventario(InventarioBase):
+    idUsuario: int
     class Config:
         model_config = {"from_attributes": True}
 
@@ -76,7 +79,6 @@ class Equipo(EquipoBase):
     idEquipo: int
     class Config:
         model_config = {"from_attributes": True}
-
 
 #Abismo
 class PersonajeAbismo(BaseModel):

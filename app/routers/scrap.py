@@ -2,10 +2,11 @@ from fastapi import APIRouter, HTTPException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 import undetected_chromedriver as uc
 import requests
 import time
+from app.database import SessionLocal
+from app.routers.objetoinventario import create_objeto_inventario
 
 router = APIRouter(prefix="/scrap", tags=["scrap"])
 
@@ -97,6 +98,7 @@ def scrap_items():
 
         # Extracción final de elementos
         items = []
+        db = SessionLocal()
         grid = WebDriverWait(driver, 15).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, grid_selector))
         )
@@ -115,17 +117,26 @@ def scrap_items():
                 try:
                     data = resp.json()
                     item = {
-                        'id': data.get('id'),
-                        'name': data.get('name'),
-                        'rarity': data.get('rarity'),
-                        'nameicon': data.get('images', {}).get('nameicon')
+                        'idObjetoApi': data.get('id'),
+                        'nombreObjeto': data.get('name'),
+                        'rarezaObjeto': data.get('rarity'),
+                        'imagenObjeto': data.get('images', {}).get('nameicon')
                     }
                     items.append(item)
+                    # Guardar en la base de datos
+                    if item['idObjetoApi'] and item['nombreObjeto'] and item['rarezaObjeto'] and item['imagenObjeto']:
+                        try:
+                            from app.schemas.schemas import ObjetoInventario
+                            objeto_schema = ObjetoInventario(**item)
+                            create_objeto_inventario(objeto=objeto_schema, db=db)
+                        except Exception as db_ex:
+                            print(f'Error guardando en base de datos: {db_ex}')
                     print(f'Item recogido: {item}')
                 except Exception as ex:
                     print(f'Error parseando JSON para {query_name}:', ex)
             else:
                 print(f'Error en API {query_name}: {resp.status_code}')
+        db.close()
         driver.quit()
         print(f'Total items recogidos: {len(items)}')
         return items

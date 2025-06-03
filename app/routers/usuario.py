@@ -22,8 +22,6 @@ def obtener_usuario(idUsuario: int, db: Session = Depends(get_db)):
 def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     return crud.create_usuario(db, usuario)
 
-
-
 @router.delete("/{idUsuario}")
 def eliminar_usuario(idUsuario: int, db: Session = Depends(get_db)):
     return crud.delete_usuario(db, idUsuario)

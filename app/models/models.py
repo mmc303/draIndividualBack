@@ -39,4 +39,16 @@ class Abismo(Base):
     version = Column(String, nullable=False) #Version 1.0A / Version 5.4B
     listaPersonajes = Column(JSONB, nullable=False)
     listaEquipos = Column(JSONB, nullable=False)
-    
+
+class ObjetoInventario(Base):
+    __tablename__ = "objetoinventario"
+    idObjetoApi = Column(Integer, primary_key=True, index=True)
+    nombreObjeto = Column(String, nullable=False)
+    rarezaObjeto = Column(Integer, nullable=False)
+    imagenObjeto = Column(String, nullable=False)
+
+class Inventario(Base):
+    __tablename__ = "inventario"
+    idUsuario = Column(Integer, ForeignKey("usuario.idUsuario", ondelete="CASCADE"), primary_key=True)
+    idObjetoApi = Column(Integer, ForeignKey("objetoinventario.idObjetoApi", ondelete="CASCADE"), primary_key=True)
+    cantidadObjeto = Column(Integer, nullable=False)

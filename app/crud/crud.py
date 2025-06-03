@@ -1,11 +1,22 @@
 from sqlalchemy.orm import Session
 from app.schemas import schemas
+from app.models import models
 
 def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
     db_usuario = models.Usuario(**usuario.dict())
     db.add(db_usuario)
     db.commit()
     db.refresh(db_usuario)
+    # Crear inventario vacío para cada objeto existente
+    objetos = db.query(models.ObjetoInventario).all()
+    for obj in objetos:
+        db_inventario = models.Inventario(
+            idUsuario=db_usuario.idUsuario,
+            idObjetoApi=obj.idObjetoApi,
+            cantidadObjeto=0
+        )
+        db.add(db_inventario)
+    db.commit()
     return db_usuario
 
 def get_usuarios(db: Session):
