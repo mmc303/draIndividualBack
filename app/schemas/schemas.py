@@ -29,7 +29,7 @@ class UsuarioCreate(UsuarioBase):
 
 class Usuario(UsuarioBase):
     idUsuario: int
-    inventario: List[Inventario]
+    inventario: Optional[List[Inventario]] = []
     class Config:
         model_config = {"from_attributes": True}
 
