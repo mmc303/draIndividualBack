@@ -7,6 +7,8 @@ import requests
 import time
 from app.database import SessionLocal
 from app.routers.objetoinventario import create_objeto_inventario
+from app.routers.personaje import crear_personaje
+from app.schemas.schemas import ObjetoInventario, Personaje
 
 router = APIRouter(prefix="/scrap", tags=["scrap"])
 
@@ -117,7 +119,7 @@ def scrap_items():
                     data = resp.json()
                     item = {
                         'idObjetoApi': data.get('id'),
-                        'nombreObjeto': data.get('name'),
+                        'nombreObjeto': data.get('name'),  
                         'rarezaObjeto': data.get('rarity'),
                         'imagenObjeto': data.get('images', {}).get('nameicon')
                     }
@@ -125,7 +127,6 @@ def scrap_items():
                     # Guardar en la base de datos
                     if item['idObjetoApi'] and item['nombreObjeto'] and item['rarezaObjeto'] and item['imagenObjeto']:
                         try:
-                            from app.schemas.schemas import ObjetoInventario
                             objeto_schema = ObjetoInventario(**item)
                             create_objeto_inventario(objeto=objeto_schema, db=db)
                         except Exception as db_ex:
@@ -256,12 +257,23 @@ def scrap_characters():
                             })
                         ascensiones[asc_key] = asc_list
                     character = {
+                        'idPersonaje': data.get('id'),
                         'nombrePersonaje': data.get('name'),
                         'elemento': data.get('element'),
-                        'rareza': data.get('rarity'),
+                        'rareza': int(data.get('rarity')),
                         'urlImagen': data.get('images', {}).get('nameicon'),
                         'ascensiones': ascensiones
                     }
+                    db = SessionLocal()
+                    personaje_schema = Personaje(**character)
+                    try:
+                        crear_personaje(personaje_schema, db)
+                        print(f'Personaje guardado en la base de datos: {character}')
+                    except Exception as db_ex:
+                        db.rollback()
+                        print(f'Error guardando en base de datos: {db_ex}')
+                    finally:
+                        db.close()
                     characters.append(character)
                     print(f'Personaje recogido: {character}')
                 except Exception as ex:

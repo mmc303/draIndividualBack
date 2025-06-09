@@ -15,7 +15,9 @@ class Personaje(Base):
     idPersonaje = Column(Integer, primary_key=True, index=True)
     nombrePersonaje = Column(String, unique=True, index=True, nullable=False)
     elemento = Column(String, nullable=False)
+    rareza = Column(Integer, nullable=False)
     urlImagen = Column(String, nullable=False)
+    ascensiones = Column(JSONB, nullable=False) 
     usuarios_personaje = relationship("UsuarioPersonaje", back_populates="personaje")
 
 class UsuarioPersonaje(Base):

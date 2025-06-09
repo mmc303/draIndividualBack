@@ -25,3 +25,13 @@ def crear_personaje(personaje: schemas.PersonajeBase, db: Session = Depends(get_
     db.commit()
     db.refresh(db_personaje)
     return db_personaje
+
+@router.delete("/", response_model=List[schemas.Personaje])
+def eliminar_todos_personajes(db: Session = Depends(get_db)):
+    personajes = db.query(models.Personaje).all()
+    if not personajes:
+        raise HTTPException(status_code=404, detail="No hay personajes para eliminar")
+    for personaje in personajes:
+        db.delete(personaje)
+    db.commit()
+    return personajes
