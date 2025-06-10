@@ -18,6 +18,7 @@ class Personaje(Base):
     rareza = Column(Integer, nullable=False)
     urlImagen = Column(String, nullable=False)
     ascensiones = Column(JSONB, nullable=False) 
+    talentos = Column(JSONB, nullable=False)
     usuarios_personaje = relationship("UsuarioPersonaje", back_populates="personaje")
 
 class UsuarioPersonaje(Base):

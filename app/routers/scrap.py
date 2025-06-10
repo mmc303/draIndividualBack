@@ -240,15 +240,7 @@ def scrap_characters():
                         for mat in mats:
                             # Consultar información del material
                             material_name = mat.get('name', '').replace(' ', '%20')
-                            material_api_url = f"https://genshin-db-api.vercel.app/api/materials?query={material_name}&queryLanguages=spanish&resultLanguage=spanish"
-                            material_resp = requests.get(material_api_url)
-                            imagen_material = ''
-                            if material_resp.status_code == 200:
-                                try:
-                                    material_data = material_resp.json()
-                                    imagen_material = material_data.get('images', {}).get('nameicon', '')
-                                except Exception as mat_ex:
-                                    print(f'Error parseando material {material_name}:', mat_ex)
+                            imagen_material = _get_material_image(material_name)
                             asc_list.append({
                                 'idMaterial': mat.get('id'),
                                 'nombreMaterial': mat.get('name'),
@@ -256,13 +248,40 @@ def scrap_characters():
                                 'imagenMaterial': imagen_material
                             })
                         ascensiones[asc_key] = asc_list
+                except Exception as ex:
+                    print(f'Error parseando JSON para {query_name}:', ex)
+                    continue
+                # Procesar talentos
+                talentos_api_url = f"https://genshin-db-api.vercel.app/api/talents?query={query_name}&queryLanguages=english&resultLanguage=spanish"
+                print(f'Consultando talentos para: {query_name}')
+                resp_talentos = requests.get(talentos_api_url)
+                if resp_talentos.status_code == 200:
+                    try:
+                        talentos_data = resp_talentos.json()
+                        talentos = {}
+                        costs_talentos = talentos_data.get('costs', {})
+                        for lvl, materials in costs_talentos.items():
+                            talentos[lvl] = []
+                            for mat in materials:
+                                # Consultar información del material
+                                material_name = mat.get('name', '').replace(' ', '%20')
+                                imagen_material = _get_material_image(material_name)
+                                talentos[lvl].append({
+                                    'idMaterial': mat.get('id'),
+                                    'nombreMaterial': mat.get('name'),
+                                    'cantidadMaterial': mat.get('count'),
+                                    'imagenMaterial': imagen_material
+                                })
+                    except Exception as ex:
+                        print(f'Error parseando JSON para talentos: {ex}')
                     character = {
                         'idPersonaje': data.get('id'),
                         'nombrePersonaje': data.get('name'),
                         'elemento': data.get('element'),
                         'rareza': int(data.get('rarity')),
                         'urlImagen': data.get('images', {}).get('nameicon'),
-                        'ascensiones': ascensiones
+                        'ascensiones': ascensiones,
+                        'talentos': talentos
                     }
                     db = SessionLocal()
                     personaje_schema = Personaje(**character)
@@ -276,8 +295,6 @@ def scrap_characters():
                         db.close()
                     characters.append(character)
                     print(f'Personaje recogido: {character}')
-                except Exception as ex:
-                    print(f'Error parseando JSON para {query_name}:', ex)
             else:
                 print(f'Error en API {query_name}: {resp.status_code}')
         driver.quit()
@@ -288,4 +305,16 @@ def scrap_characters():
         driver.quit()
         print('Error en scraping:', e)
         raise HTTPException(status_code=500, detail=str(e))
+
+def _get_material_image(material_name: str) -> str:
+    """Fetches the image URL of a material from the API."""
+    material_api_url = f"https://genshin-db-api.vercel.app/api/materials?query={material_name}&queryLanguages=spanish&resultLanguage=spanish"
+    material_resp = requests.get(material_api_url)
+    if material_resp.status_code == 200:
+        try:
+            material_data = material_resp.json()
+            return material_data.get('images', {}).get('nameicon', '')
+        except Exception as mat_ex:
+            print(f'Error parseando material {material_name}:', mat_ex)
+    return ''
 

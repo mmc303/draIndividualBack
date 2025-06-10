@@ -46,6 +46,7 @@ class PersonajeBase(BaseModel):
     rareza: int
     urlImagen: str
     ascensiones: Dict[str, List[Material]]
+    talentos: Dict[str, List[Material]]
 
 class Personaje(PersonajeBase):
     idPersonaje: int
