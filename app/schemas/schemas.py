@@ -52,11 +52,20 @@ class Personaje(PersonajeBase):
     class Config:
         model_config = {"from_attributes": True}
 
-class UsuarioPersonaje(BaseModel):
-    idUsuario: int
-    idPersonaje: int
+#Relación usuario-personaje
+class UsuarioPersonajeBase(BaseModel):
     arma: Optional[str]
     artefacto: Optional[str]
+    constelacion: int
+    nivel: int
+    nivelDeseado: int
+    ascension: int
+    talentos: Dict[str, int]
+    talentosDeseados: Dict[str, int]
+
+class UsuarioPersonaje(UsuarioPersonajeBase):
+    idUsuario: int
+    idPersonaje: int
     class Config:
         model_config = {"from_attributes": True}
 

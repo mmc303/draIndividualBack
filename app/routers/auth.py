@@ -14,4 +14,4 @@ def login(response: Response, form_data: schemas.UsuarioCreate, db: Session = De
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(data={"sub": str(user.idUsuario)}, expires_delta=access_token_expires)
     response.set_cookie(key="access_token", value=access_token, httponly=True)
-    return {"mensaje": "Inicio de sesión exitoso"}
+    return {"idUsuario": user.idUsuario, "correo": user.correo}

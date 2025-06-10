@@ -18,6 +18,13 @@ def get_db():
 def listar_personajes(db: Session = Depends(get_db)):
     return db.query(models.Personaje).all()
 
+@router.get("/{idPersonaje}", response_model=schemas.Personaje)
+def obtener_personaje(idPersonaje: int, db: Session = Depends(get_db)):
+    db_personaje = db.query(models.Personaje).filter(models.Personaje.idPersonaje == idPersonaje).first()
+    if not db_personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+    return db_personaje
+
 @router.post("/", response_model=schemas.Personaje)
 def crear_personaje(personaje: schemas.PersonajeBase, db: Session = Depends(get_db)):
     db_personaje = models.Personaje(**personaje.dict())

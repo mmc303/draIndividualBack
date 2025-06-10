@@ -26,6 +26,12 @@ class UsuarioPersonaje(Base):
     idPersonaje = Column(Integer, ForeignKey("personaje.idPersonaje", ondelete="CASCADE"), primary_key=True)
     arma = Column(String)
     artefacto = Column(String)
+    constelacion = Column(Integer, nullable=False)
+    nivel = Column(Integer, nullable=False)
+    nivelDeseado = Column(Integer, nullable=False)
+    ascension = Column(Integer, nullable=False)
+    talentos = Column(JSONB, nullable=False)
+    talentosDeseados = Column(JSONB, nullable=False)
     usuario = relationship("Usuario", back_populates="personaje_usuario")
     personaje = relationship("Personaje", back_populates="usuarios_personaje")
 

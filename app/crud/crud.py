@@ -3,6 +3,10 @@ from app.schemas import schemas
 from app.models import models
 from app.auth import get_password_hash
 
+def get_usuario(db: Session, correo: str):
+    usuario = db.query(models.Usuario).filter(models.Usuario.correo == correo).first()
+    return { "idUsuario": usuario.idUsuario, "correo": usuario.correo }
+
 def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
     hashed_password = get_password_hash(usuario.contrasena)
     db_usuario = models.Usuario(
@@ -22,7 +26,8 @@ def create_usuario(db: Session, usuario: schemas.UsuarioCreate):
         )
         db.add(db_inventario)
     db.commit()
-    return db_usuario
+    usuario = get_usuario(db, usuario.correo)
+    return usuario
 
 def get_usuarios(db: Session):
     return db.query(models.Usuario).all()
