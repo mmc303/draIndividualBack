@@ -35,6 +35,29 @@ def get_inventario(idUsuario: int, db: Session = Depends(get_db)):
             })
     return inventario_detallado
 
+@router.get("/{idUsuario}/{idObjetoApi}", response_model=schemas.Inventario)
+def get_inventario_item(idUsuario: int, idObjetoApi: int, db: Session = Depends(get_db)):
+    '''Obtiene un objeto específico del inventario de un usuario.'''
+    inventario_item = db.query(models.Inventario).filter(
+        models.Inventario.idUsuario == idUsuario,
+        models.Inventario.idObjetoApi == idObjetoApi
+    ).first()
+    if not inventario_item:
+        raise HTTPException(status_code=404, detail="Objeto no encontrado en inventario")
+
+    objeto = db.query(models.ObjetoInventario).filter(models.ObjetoInventario.idObjetoApi == idObjetoApi).first()
+    if not objeto:
+        raise HTTPException(status_code=404, detail="Objeto no encontrado en inventario (ObjetoInventario)")
+
+    return {
+        "idUsuario": inventario_item.idUsuario,
+        "idObjetoApi": objeto.idObjetoApi,
+        "nombreObjeto": objeto.nombreObjeto,
+        "rarezaObjeto": objeto.rarezaObjeto,
+        "imagenObjeto": objeto.imagenObjeto,
+        "cantidadObjeto": inventario_item.cantidadObjeto,
+    }
+
 @router.post("/{idUsuario}", response_model=dict)
 def add_inventario(idUsuario: int, item: schemas.InventarioBase, db: Session = Depends(get_db)):
     '''Agrega un objeto al inventario de un usuario y retorna detalles del objeto.'''
@@ -44,7 +67,7 @@ def add_inventario(idUsuario: int, item: schemas.InventarioBase, db: Session = D
     db.refresh(nuevo)
     return {"message": "Objeto agregado al inventario"}
 
-@router.put("/{idUsuario}", response_model=dict)
+@router.put("/{idUsuario}/{idObjetoApi}", response_model=dict)
 def update_inventario(idUsuario: int, item: schemas.InventarioBase, db: Session = Depends(get_db)):
     '''Modifica la cantidad de un objeto en el inventario de un usuario y retorna detalles del objeto.'''
     inv = db.query(models.Inventario).filter(
