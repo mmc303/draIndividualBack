@@ -61,6 +61,7 @@ class UsuarioPersonajeBase(BaseModel):
     nivel: int
     nivelDeseado: int
     ascension: int
+    ascensionDeseada: int
     talentos: Dict[str, int]
     talentosDeseados: Dict[str, int]
 

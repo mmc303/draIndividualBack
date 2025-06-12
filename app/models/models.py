@@ -31,6 +31,7 @@ class UsuarioPersonaje(Base):
     nivel = Column(Integer, nullable=False)
     nivelDeseado = Column(Integer, nullable=False)
     ascension = Column(Integer, nullable=False)
+    ascensionDeseada = Column(Integer, nullable=False)
     talentos = Column(JSONB, nullable=False)
     talentosDeseados = Column(JSONB, nullable=False)
     usuario = relationship("Usuario", back_populates="personaje_usuario")
