@@ -40,6 +40,13 @@ def actualizar_relacion(idUsuario: int, idPersonaje: int, datos: schemas.Usuario
     
     relacion.arma = datos.arma
     relacion.artefacto = datos.artefacto
+    relacion.constelacion = datos.constelacion
+    relacion.nivel = datos.nivel
+    relacion.nivelDeseado = datos.nivelDeseado
+    relacion.ascension = datos.ascension
+    relacion.ascensionDeseada = datos.ascensionDeseada
+    relacion.talentos = datos.talentos
+    relacion.talentosDeseados = datos.talentosDeseados
     db.commit()
     db.refresh(relacion)
     return relacion
