@@ -17,7 +17,7 @@ def scrap_items():
     url = "https://gi20.hakush.in/item"
     print('Iniciando scraping de', url)
     
-    filters = [19, 20, 21, 22, 23, 26, 27, 28, 32] 
+    filters = [10, 11, 14, 15, 16, 19, 20, 21, 22, 23, 26, 27, 28, 32]
     print('Filtros a aplicar:', filters)
 
     chrome_options = uc.ChromeOptions()
@@ -118,10 +118,10 @@ def scrap_items():
                 try:
                     data = resp.json()
                     item = {
-                        'idObjetoApi': data.get('id'),
-                        'nombreObjeto': data.get('name'),  
-                        'rarezaObjeto': data.get('rarity') if data.get('rarity') else 0,
-                        'imagenObjeto': data.get('images', {}).get('nameicon')
+                        "idObjetoApi": data.get('id'),
+                        "nombreObjeto": data.get('name'),  
+                        "rarezaObjeto": data.get('rarity') if data.get('rarity') else 0,
+                        "imagenObjeto": data.get('images', {}).get('nameicon')
                     }
                     items.append(item)
                     # Guardar en la base de datos
