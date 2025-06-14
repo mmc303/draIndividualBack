@@ -73,7 +73,7 @@ class UsuarioPersonaje(UsuarioPersonajeBase):
 
 #Equipo
 class PersonajeEquipo(BaseModel):
-    personaje: PersonajeBase
+    personaje: str
     arma: Optional[str]
     artefacto: Optional[str]
 
