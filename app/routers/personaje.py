@@ -27,7 +27,7 @@ def obtener_personaje(idPersonaje: int, db: Session = Depends(get_db)):
 
 @router.get("/nombre/{nombre}", response_model=schemas.Personaje)
 def obtener_personaje_por_nombre(nombre: str, db: Session = Depends(get_db)):
-    db_personaje = db.query(models.Personaje).filter(models.Personaje.nombrePersonaje == nombre).first()
+    db_personaje = db.query(models.Personaje).filter(models.Personaje.nombrePersonaje.contains(nombre)).first()
     if not db_personaje:
         raise HTTPException(status_code=404, detail="Personaje no encontrado")
     return db_personaje

@@ -59,7 +59,7 @@ Dame una composición de equipo para Genshin Impact (4 personajes) basada en el 
 Devuélvelo en formato JSON exactamente así (sin bloques de código ni texto adicional) y en español:
 Usa este sitio para obtener el nombre en ingles de las armas: https://github.com/theBowja/genshin-db/tree/main/src/data/English/weapons
 Usa este sitio para obtener el nombre en ingles de los artefactos: https://github.com/theBowja/genshin-db/tree/main/src/data/English/artifacts
-Devuelve siempre 2 armas y 2 artefactos óptimos por personaje.
+Devuelve siempre 2 armas y 2 artefactos óptimos por personaje. El nombre del personaje en español.
 
 {{
   \"personajes\": [
