@@ -22,12 +22,25 @@ def listar_equipos(db: Session = Depends(get_db)):
 
 @router.get("/{nombre}", response_model=schemas.Equipo)
 def obtener_equipo(nombre: str, db: Session = Depends(get_db)):
-    db_equipo = db.query(models.Equipo).filter(models.Equipo.canonicalKey.contains(nombre.lower())).first()
+    # Buscar por primer personaje en detalles.personajes
+    db_equipo = buscar_equipo_por_primer_personaje(nombre, db)
     if db_equipo is None:
-        raise HTTPException(status_code=404, detail="Equipo no encontrado")
-    return db_equipo
+        # Si no existe, generar con IA
+        equipo = generar_equipo_ia(nombre, db)
+        if not equipo:
+            raise HTTPException(status_code=404, detail="Equipo no encontrado")
+    else:
+        # Si es dict, devolver tal cual; si es objeto, mapear a dict
+        if isinstance(db_equipo, dict):
+            equipo = db_equipo
+        else:
+            equipo = {
+                "canonicalKey": db_equipo.canonicalKey,
+                "detalles": db_equipo.detalles,
+                "idEquipo": db_equipo.idEquipo
+            }
+    return equipo
 
-@router.post("/generar-ia/{personaje}", response_model=schemas.Equipo)
 def generar_equipo_ia(personaje: str, db: Session = Depends(get_db)):
     import logging
     import time
@@ -44,6 +57,9 @@ def generar_equipo_ia(personaje: str, db: Session = Depends(get_db)):
     prompt = f"""
 Dame una composición de equipo para Genshin Impact (4 personajes) basada en el personaje {personaje}.
 Devuélvelo en formato JSON exactamente así (sin bloques de código ni texto adicional) y en español:
+Usa este sitio para obtener el nombre en ingles de las armas: https://github.com/theBowja/genshin-db/tree/main/src/data/English/weapons
+Usa este sitio para obtener el nombre en ingles de los artefactos: https://github.com/theBowja/genshin-db/tree/main/src/data/English/artifacts
+Devuelve siempre 2 armas y 2 artefactos óptimos por personaje.
 
 {{
   \"personajes\": [
@@ -134,3 +150,46 @@ El personaje principal ({personaje}) debe ser el primero en la lista.
         "detalles": db_equipo.detalles,
         "idEquipo": db_equipo.idEquipo
     }
+
+def buscar_equipo_por_primer_personaje(nombre_personaje: str, db: Session):
+    """
+    Busca un equipo donde el primer elemento de detalles.personajes.personaje sea igual a nombre_personaje.
+    """
+    from sqlalchemy import text
+    query = text("""
+        SELECT * FROM equipo
+        WHERE detalles->'personajes'->0->>'personaje' = :nombre
+        LIMIT 1
+    """)
+    result = db.execute(query, {"nombre": nombre_personaje}).fetchone()
+    if result:
+        return {
+            "idEquipo": result.idEquipo,
+            "canonicalKey": result.canonicalKey,
+            "detalles": result.detalles
+        }
+    return None
+
+def buscar_equipo_por_personaje(nombre_personaje: str, db: Session):
+    """
+    Busca un equipo donde cualquier elemento de detalles.personajes.personaje sea igual a nombre_personaje,
+    ignorando mayúsculas, minúsculas y tildes.
+    """
+    from sqlalchemy import text
+    # Usamos unquery que recorre el array y normaliza para comparar sin tildes ni mayúsculas
+    query = text("""
+        SELECT * FROM equipo
+        WHERE EXISTS (
+            SELECT 1 FROM jsonb_array_elements(detalles->'personajes') AS p
+            WHERE unaccent(lower(trim(p->>'personaje'))) = unaccent(lower(trim(:nombre)))
+        )
+        LIMIT 1
+    """)
+    result = db.execute(query, {"nombre": nombre_personaje}).fetchone()
+    if result:
+        return {
+            "idEquipo": result.idEquipo,
+            "canonicalKey": result.canonicalKey,
+            "detalles": result.detalles
+        }
+    return None

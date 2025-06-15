@@ -25,6 +25,13 @@ def obtener_personaje(idPersonaje: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Personaje no encontrado")
     return db_personaje
 
+@router.get("/nombre/{nombre}", response_model=schemas.Personaje)
+def obtener_personaje_por_nombre(nombre: str, db: Session = Depends(get_db)):
+    db_personaje = db.query(models.Personaje).filter(models.Personaje.nombrePersonaje == nombre).first()
+    if not db_personaje:
+        raise HTTPException(status_code=404, detail="Personaje no encontrado")
+    return db_personaje
+
 @router.post("/", response_model=schemas.Personaje)
 def crear_personaje(personaje: schemas.PersonajeBase, db: Session = Depends(get_db)):
     db_personaje = models.Personaje(**personaje.dict())
